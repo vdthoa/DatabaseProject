@@ -13,3 +13,5 @@ CREATE TABLE [dbo].[fct] (
 
 GO
 
+ALTER TABLE [dbo].[fct] ADD [PhoneNumber] VARCHAR(20)
+
