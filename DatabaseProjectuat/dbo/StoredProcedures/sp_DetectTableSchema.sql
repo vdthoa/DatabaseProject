@@ -1,0 +1,10 @@
+CREATE PROC sp_DetectTableSchema
+AS
+BEGIN
+    ALTER TABLE fct ADD FullName INT NULL
+    ALTER TABLE fct ADD LastName VARCHAR(200) NULL
+    ALTER TABLE fct ADD FirstName VARCHAR(200) NULL
+END
+
+GO
+
