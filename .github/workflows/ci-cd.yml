@@ -13,7 +13,7 @@ jobs:
       fabric_url: 'g3dej5iainvulpr3gaeiaudroa-pncwescdfvhe3lvd2uueehrjre.datawarehouse.fabric.microsoft.com'
       fabric_username: 'fabrictestuser@salugandulahotmail.onmicrosoft.com'
       fabric_password: 'Poxu470761!'
-      fabric_dbname: 'dwh!'
+      fabric_dbname: 'dwh'
 
     steps:
     - name: Checkout repository
