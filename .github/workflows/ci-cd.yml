@@ -23,6 +23,7 @@ jobs:
         wget https://go.microsoft.com/fwlink/?linkid=2157202 -O sqlpackage.zip
         unzip -q sqlpackage.zip -d sqlpackage
         sudo mv sqlpackage/sqlpackage /usr/local/bin/sqlpackage
+        sudo chmod +x /usr/local/bin/sqlpackage  # Add this line to set execute permissions
 
     - name: Deploy to Fabric Data Warehouse
       run: |
