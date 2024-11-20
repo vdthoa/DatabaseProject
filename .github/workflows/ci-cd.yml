@@ -9,6 +9,12 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      fabric_url: 'g3dej5iainvulpr3gaeiaudroa-pncwescdfvhe3lvd2uueehrjre.datawarehouse.fabric.microsoft.com'
+      fabric_username: 'fabrictestuser@salugandulahotmail.onmicrosoft.com'
+      fabric_password: 'Poxu470761!'
+      fabric_dbname: 'dwh!'
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -16,7 +22,7 @@ jobs:
     - name: Set up .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '6.0.x'  # Updated to .NET 6
+        dotnet-version: '6.0.x'
 
     - name: Install SQLPackage
       run: |
@@ -25,6 +31,6 @@ jobs:
 
     - name: Deploy to Fabric Data Warehouse
       run: |
-        sqlpackage /Action:Publish /SourceFile:./DatabaseProjectuat/dbo/Tables/your.dacpac /TargetServerName:${{ secrets.fabric_url }} /TargetDatabaseName:dwh /TargetUser:${{ secrets.fabric_username }} /TargetPassword:${{ secrets.fabric_password }}
+        sqlpackage /Action:Publish /SourceFile:./DatabaseProjectuat/dbo/Tables/your.dacpac /TargetServerName:${{ env.fabric_url }} /TargetDatabaseName:${{ env.fabric_dbname }} /TargetUser:${{ secrets.fabric_username }} /TargetPassword:${{ secrets.fabric_password }}
       env:
         DOTNET_ROOT: /usr/share/dotnet
