@@ -13,10 +13,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Add Microsoft SQL Server repository
+        run: |
+          curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+          curl https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list | sudo tee /etc/apt/sources.list.d/mssql-server.list
+          sudo apt-get update
+
       - name: Install SQL Server
         run: |
-          sudo apt-get update
           sudo apt-get install -y mssql-server
+
+      - name: Run SQL Server setup
+        run: |
+          sudo MSSQL_SA_PASSWORD=YourStrong!Passw0rd /opt/mssql/bin/mssql-conf -n setup accept-eula
 
       - name: Install dependencies
         run: |
@@ -24,7 +33,7 @@ jobs:
 
       - name: Deploy Tables to Fabric Warehouse
         env:
-          FABRIC_CONNECTION_STRING: ${{ secrets.FABRIC_WAREHOUSE_URL }}
+          FABRIC_CONNECTION_STRING: ${{ secrets.FABRIC_CONNECTION_STRING }}
           FABRIC_USERNAME: ${{ secrets.FABRIC_USERNAME }}
           FABRIC_PASSWORD: ${{ secrets.FABRIC_PASSWORD }}
         run: |
