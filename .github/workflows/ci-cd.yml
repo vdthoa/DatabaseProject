@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: Deploy SQL Data Project
 
 on:
   push:
@@ -6,49 +6,26 @@ on:
       - main
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Reconfigure dpkg database
-        run: |
-          sudo dpkg --configure -a
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x'
 
-      - name: Fix broken dependencies
-        run: |
-          sudo apt install -f
+    - name: Install SQLPackage
+      run: |
+        wget https://go.microsoft.com/fwlink/?linkid=2157202 -O sqlpackage.zip
+        unzip -q sqlpackage.zip -d sqlpackage
+        sudo mv sqlpackage/sqlpackage /usr/local/bin/sqlpackage
 
-      - name: Add Microsoft SQL Server repository
-        run: |
-          curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-          curl https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list | sudo tee /etc/apt/sources.list.d/mssql-server.list
-          sudo apt-get update
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get install -y libldap-common
-
-      - name: Install SQL Server
-        run: |
-          sudo apt-get install -y mssql-server
-
-      - name: Run SQL Server setup
-        run: |
-          sudo MSSQL_SA_PASSWORD=YourStrong!Passw0rd /opt/mssql/bin/mssql-conf setup accept-eula
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-
-      - name: Deploy Tables to Fabric Warehouse
-        env:
-          FABRIC_CONNECTION_STRING: ${{ secrets.FABRIC_CONNECTION_STRING }}
-          FABRIC_USERNAME: ${{ secrets.FABRIC_USERNAME }}
-          FABRIC_PASSWORD: ${{ secrets.FABRIC_PASSWORD }}
-        run: |
-          for file in $(find ./Tables -name '*.sql'); do
-            sqlcmd -S ${{ env.FABRIC_CONNECTION_STRING }} -U ${{ env.FABRIC_USERNAME }} -P ${{ env.FABRIC_PASSWORD }} -d ${{ secrets.DATABASE_NAME }} -i $file
-          done
+    - name: Deploy to Fabric Data Warehouse
+      run: |
+        sqlpackage /Action:Publish /SourceFile:./DatabaseProjectuat/dbo/Tables/your.dacpac /TargetServerName:${{ secrets.fabric_url }} /TargetDatabaseName:your-database /TargetUser:${{ secrets.fabric_username }} /TargetPassword:${{ secrets.fabric_password }}
+      env:
+        DOTNET_ROOT: /usr/share/dotnet
