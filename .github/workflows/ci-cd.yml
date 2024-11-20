@@ -13,36 +13,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Add Microsoft SQL Server repository
+      - name: Install sqlcmd
         run: |
           curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-          curl https://packages.microsoft.com/config/ubuntu/20.04/mssql-server-2019.list | sudo tee /etc/apt/sources.list.d/mssql-server.list
+          curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
           sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
 
-      - name: Install dependencies
+      - name: Add sqlcmd to PATH
         run: |
-          sudo apt-get install -y libldap-common
-
-      - name: Create dummy libldap-2.4-2 package
-        run: |
-          echo "Package: libldap-2.4-2
-          Version: 2.4.42-2ubuntu3
-          Architecture: amd64
-          Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-          Installed-Size: 1
-          Depends: libc6 (>= 2.14)
-          Section: libs
-          Priority: optional
-          Homepage: http://www.openldap.org/
-          Description: OpenLDAP library - client-side library" | sudo tee /var/lib/dpkg/status/libldap-2.4-2
-
-      - name: Install SQL Server
-        run: |
-          sudo apt-get install -y mssql-server
-
-      - name: Run SQL Server setup
-        run: |
-          sudo MSSQL_SA_PASSWORD=YourStrong!Passw0rd /opt/mssql/bin/mssql-conf setup accept-eula
+          echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
+          source ~/.bashrc
 
       - name: Install dependencies
         run: |
