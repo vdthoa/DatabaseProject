@@ -21,7 +21,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get install -y libldap-2.5-0
+          sudo apt-get install -y libldap-common
+
+      - name: Create dummy libldap-2.4-2 package
+        run: |
+          echo "Package: libldap-2.4-2
+          Version: 2.4.42-2ubuntu3
+          Architecture: amd64
+          Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+          Installed-Size: 1
+          Depends: libc6 (>= 2.14)
+          Section: libs
+          Priority: optional
+          Homepage: http://www.openldap.org/
+          Description: OpenLDAP library - client-side library" | sudo tee /var/lib/dpkg/status/libldap-2.4-2
 
       - name: Install SQL Server
         run: |
