@@ -20,15 +20,11 @@ jobs:
 
     - name: Install SQLPackage
       run: |
-        sudo apt-get update
-        sudo apt-get install -y wget apt-transport-https
-        wget -qO- https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-        sudo add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list)"
-        sudo apt-get update
-        sudo apt-get install -y mssql-tools
+        dotnet tool install -g microsoft.sqlpackage
+        echo 'export PATH="$PATH:$HOME/.dotnet/tools"' >> $GITHUB_ENV
 
     - name: Deploy to Fabric Data Warehouse
       run: |
-        /opt/mssql-tools/bin/sqlpackage /Action:Publish /SourceFile:./DatabaseProjectuat/dbo/Tables/your.dacpac /TargetServerName:${{ secrets.fabric_url }} /TargetDatabaseName:your-database /TargetUser:${{ secrets.fabric_username }} /TargetPassword:${{ secrets.fabric_password }}
+        sqlpackage /Action:Publish /SourceFile:./DatabaseProjectuat/dbo/Tables/your.dacpac /TargetServerName:${{ secrets.fabric_url }} /TargetDatabaseName:your-database /TargetUser:${{ secrets.fabric_username }} /TargetPassword:${{ secrets.fabric_password }}
       env:
         DOTNET_ROOT: /usr/share/dotnet
